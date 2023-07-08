@@ -1,0 +1,22 @@
+{
+  "name": "immediate-wc",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-jsx-to-htm": "^2.2.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.0"
+  },
+  "dependencies": {
+    "fast-equals": "^5.0.1",
+    "htm": "^3.1.1",
+    "lit-html": "^2.7.5",
+    "nano-jsx": "^0.0.37"
+  }
+}
