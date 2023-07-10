@@ -24,6 +24,7 @@ function compareTwo(a: any, b: any): boolean {
   // they're equal, return true
   return true;
 }
+
 function compare(a: any[], b: any[], cache?: number) {
   // unequal lengths, return false early
   if (a.length !== b.length) return false;
@@ -45,7 +46,7 @@ function compare(a: any[], b: any[], cache?: number) {
 export class Immediate extends LitElement {
   // Values returned from this.html
   #__renderValues: any[] = [];
-  #isVisible = true;
+  #__isVisible = true;
 
   // constructor
   constructor() {
@@ -56,7 +57,7 @@ export class Immediate extends LitElement {
       // check memo and effect values
       // TODO: check memo and effect values
       // check if visible
-      if (!this.#isVisible) return requestAnimationFrame(update);
+      if (!this.#__isVisible) return requestAnimationFrame(update);
       // check if render values have changed
       previous = this.#__renderValues;
       this.render();
@@ -74,51 +75,52 @@ export class Immediate extends LitElement {
   mount?(): void;
   unmount?(): void;
 
-  #mountCallbacks = new Set<() => void>();
-  #unmountCallbacks = new Set<() => void>();
+  #__mountCallbacks = new Set<() => void>();
+  #__unmountCallbacks = new Set<() => void>();
 
   protected onMount = (callback: () => void) => {
-    this.#mountCallbacks.add(callback);
+    this.#__mountCallbacks.add(callback);
     return () => {
-      this.#mountCallbacks.delete(callback);
+      this.#__mountCallbacks.delete(callback);
     };
   };
   protected onUnmount = (callback: () => void) => {
-    this.#unmountCallbacks.add(callback);
+    this.#__unmountCallbacks.add(callback);
     return () => {
-      this.#unmountCallbacks.delete(callback);
+      this.#__unmountCallbacks.delete(callback);
     };
   };
 
-  #intersectionObserver: IntersectionObserver | null = null;
+  #__intersectionObserver: IntersectionObserver | null = null;
 
   connectedCallback() {
     super.connectedCallback();
-    this.#mountCallbacks.forEach((callback) => callback());
+    this.#__mountCallbacks.forEach((callback) => callback());
     this.mount?.();
     // add intersection observers to all direct children. If any intersect, we should console.log.
     setTimeout(() => {
       if (this.shadowRoot?.host) {
-        this.#intersectionObserver = new IntersectionObserver((entries) => {
+        this.#__intersectionObserver = new IntersectionObserver((entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              this.#isVisible = true;
+              this.#__isVisible = true;
             } else {
-              this.#isVisible = false;
+              this.#__isVisible = false;
             }
           });
         }, {
           rootMargin: "100px",
         });
-        this.#intersectionObserver.observe(this.shadowRoot.host);
+        this.#__intersectionObserver.observe(this.shadowRoot.host);
       }
     }, 100);
   }
+
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.#unmountCallbacks.forEach((callback) => callback());
+    this.#__unmountCallbacks.forEach((callback) => callback());
     this.unmount?.();
-    this.#intersectionObserver?.disconnect();
+    this.#__intersectionObserver?.disconnect();
   }
 
   // custom html function that sets #__renderValues
