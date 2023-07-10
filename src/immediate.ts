@@ -66,6 +66,11 @@ export abstract class Immediate extends HTMLElement {
     this.#unmountCallbacks.forEach((callback) => callback());
     this.unmount?.();
   }
+
+  #effects = new Set<[() => void, any[]]>();
+  protected effect = (callback: () => (() => void) | void, deps: any[]) => {
+    this.#effects.add([callback, deps]);
+  }
 };
 
 
